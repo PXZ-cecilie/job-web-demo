@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_form %}
+
+{% block title %}submit content{% endblock %}
+
+{% block body %}
+    {{ render_form("submit content", form, url_for("user.publish", next=request.args.get('next')), col_md=False) }}
+{% endblock %}  

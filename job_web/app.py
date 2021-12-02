@@ -10,6 +10,7 @@ from flask_uploads import UploadSet, configure_uploads, patch_request_class, IMA
 
 uploaded_resume = UploadSet('resume', IMAGES)
 uploaded_logo = UploadSet('logo', IMAGES)
+#uploaded_photo = UploadSet('photo',IMAGES)
 
 
 def register_extensions(app):
@@ -23,6 +24,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     configure_uploads(app, uploaded_resume)
     configure_uploads(app, uploaded_logo)
+    # configure_uploads(app, uploaded_photo)
     patch_request_class(app, app.config['UPLOADED_SIZE'])
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -37,12 +39,13 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    from .handlers import front, admin, user, company, job
+    from .handlers import front, admin, user, company, job, search_content
     app.register_blueprint(front)
     app.register_blueprint(user)
     app.register_blueprint(admin)
     app.register_blueprint(company)
     app.register_blueprint(job)
+    #app.register_blueprint(search_content)
 
 
 def create_app(config):

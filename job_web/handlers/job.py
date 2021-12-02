@@ -5,7 +5,8 @@ from flask import Blueprint, render_template, abort,\
 from flask_login import current_user, login_required
 from ..decorators import company_required
 from ..models import Job, db, Delivery
-from ..forms import EXP, JobForm
+#from ..forms import EXP, JobForm
+from ..forms import EXP
 
 job = Blueprint('job', __name__, url_prefix='/job')
 
@@ -34,7 +35,7 @@ def detail(job_id):
         abort(404)
     return render_template('job/detail.html', job=job_obj)
 
-
+'''
 @job.route('/<int:job_id>/apply', methods=['GET', 'POST'])
 @login_required
 def apply(job_id):
@@ -57,8 +58,8 @@ def apply(job_id):
     db.session.commit()
     flash('简历投递成功', 'success')
     return redirect(url_for('job.detail', job_id=job_id))
-
-
+'''
+'''
 @job.route('/create', methods=['GET', 'POST'])
 @company_required
 def create():
@@ -69,8 +70,8 @@ def create():
         flash('职位创建成功', 'success')
         return redirect_job_index()
     return render_template('job/create.html', form=form, active='manage', panel='create')
-
-
+'''
+'''
 @job.route('/<int:job_id>/edit', methods=['GET', 'POST'])
 @company_required
 def edit(job_id):
@@ -83,7 +84,7 @@ def edit(job_id):
         flash('职位更新成功', 'success')
         return redirect_job_index()
     return render_template('job/edit.html', form=form, job_id=job_id)
-
+'''
 
 @job.route('/<int:job_id>/delete', methods=['GET', 'POST'])
 @company_required

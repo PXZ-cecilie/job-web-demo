@@ -6,7 +6,7 @@
         {% block head_css %}
         {{ ckeditor.load() }}
         {{ ckeditor.load_code_theme() }}
-        {{ moment.include_jquery() }}
+        {{ moment.include_jquery }}
         {{ moment.include_moment() }}
         {{ moment.lang('zh-CN')}}
         <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -39,24 +39,23 @@
                         <li class="{% if active == 'company' %}active{% endif %}">
                             <a href="{{ url_for('company.index') }}">企业</a>
                         </li>
+                        <li class="{% if active == 'submit_content' %}active{% endif %}">
+                            <a href="{{ url_for('user.publish') }}">submit content</a>
+                        </li>
+                        <li class="{% if active == 'read_content' %}active{% endif %}">
+                            <a href="{{ url_for('user.browse') }}">read content</a>
+                        </li>
+
                     </ul>
                     <form class="navbar-form navbar-left" action="{{ url_for('front.search') }}">
                         <div class="input-group">
                             <div class="input-group-btn">
-                                <select class="btn btn-default form-control" name="type" id="type">
-                                    <option value='job'>职位</option>
-                                    <option value='company'>企业</option>
-                                </select>
                                 <script>
-                                {% if 'company' in request.url %}
-                                    $("#type").val('company');
-                                {% else %}
-                                    $("#type").val('job');
-                                {% endif %}
+                      
                                 </script>
                             </div>
                             <input type="text" class="form-control" name="kw" id="kw"
-                                   value="{{ request.args.get('kw', '') }}" placeholder="搜索">
+                                   value="{{ request.args.get('kw', '') }}" placeholder="search">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="submit">
                                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -67,7 +66,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         {% if not current_user.is_authenticated %}
                             <li class="{% if active == 'company_register' %}active{% endif %}">
-                            	<a href="{{ url_for('company.register') }}">企业注册</a>
+                            	<a href="{{ url_for('user.register') }}">企业注册</a>
                             </li>
                             <li class="{% if active == 'user_register' %}active{% endif %}">
                             	<a href="{{ url_for('user.register') }}">个人注册</a>
@@ -78,7 +77,7 @@
                         {% else %}
                             {% if current_user.is_user() %}
                                 <li class="{% if active == 'manage' %}active{% endif %}">
-                                    <a href="{{ url_for('user.resume') }}">信息管理</a>
+                                    <a href="{{ url_for('user.register') }}">信息管理</a>
                                 </li>
                             {% endif %}
                             {% if current_user.is_company() %}
@@ -128,12 +127,6 @@
             {% endwith %}
 
             {% block body %}{% endblock %}
-
-            <!--{% block footer %}-->
-              <!--<div class="footer">-->
-                  <!--Copyright &copy; 2014-2018 By Zkqiang-->
-              <!--</div>-->
-            <!--{% endblock %}-->
         </div>
         {% block tail_js %}
         <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>

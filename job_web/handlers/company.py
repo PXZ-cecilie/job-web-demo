@@ -5,12 +5,11 @@ from flask import Blueprint, render_template, \
     redirect, url_for, flash, request, current_app, abort
 from flask_login import current_user
 from ..decorators import company_required
-from ..forms import RegisterCompanyForm, CompanyDetailForm
 from ..models import Company, Job, Delivery, db
 
 company = Blueprint('company', __name__, url_prefix='/company')
 
-
+'''
 @company.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -21,7 +20,7 @@ def register():
         flash('注册成功，请登录', 'success')
         return redirect(url_for('front.login'))
     return render_template('company/register.html', form=form, active='company_register')
-
+'''
 
 @company.route('/')
 def index():
@@ -47,7 +46,7 @@ def detail(company_id):
         return render_template('company/detail.html', pagination=pagination, panel='jobs', company=company_obj)
     return render_template('company/detail.html', company=company_obj, panel='about', active='detail')
 
-
+'''
 @company.route('/account', methods=['GET', 'POST'])
 @company_required
 def edit():
@@ -58,7 +57,7 @@ def edit():
         print(logo_url)
         flash('企业信息更新成功', 'success')
     return render_template('company/edit.html', form=form, file_url=logo_url, panel='edit', active='manage')
-
+'''
 
 @company.route('/jobs')
 @company_required

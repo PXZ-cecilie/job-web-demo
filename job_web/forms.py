@@ -5,7 +5,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import IntegerField, PasswordField, SelectField, \
     StringField, SubmitField, TextAreaField, ValidationError, BooleanField
 from wtforms.validators import Email, EqualTo, Regexp, Length, URL, DataRequired
-from .models import User, Company, db, Job, FINANCE_STAGE, FIELD, EDUCATION, EXP
+from .models import User, Company, db, Job, Article, FINANCE_STAGE, FIELD, EDUCATION, EXP
 from .app import uploaded_resume, uploaded_logo
 import time
 import random
@@ -14,21 +14,21 @@ import hmac
 
 class RegisterUserForm(FlaskForm):
 
-    email = StringField('邮箱', validators=[DataRequired(message='请填写内容'),
-                                          Email(message='请输入合法的email地址')])
-    password = PasswordField('密码', validators=[DataRequired(message='请填写密码'),
-                                               Length(6, 24, message='须在6～24个字符之间'),
-                                               Regexp(r'^[a-zA-Z]+\w+', message='仅限使用英文、数字、下划线，并以英文开头')])
-    repeat_password = PasswordField('重复密码', validators=[DataRequired(message='请填写密码'),
-                                                        EqualTo('password', message='两次密码不一致')])
-    name = StringField('姓名', validators=[DataRequired(message='请填写内容'),
-                                         Length(2, 8, message='须在2～8个字符之间')])
-    submit = SubmitField('提交')
+    email = StringField('Email', validators=[DataRequired(message='please input your email'),
+                                          Email(message='please input valid email')])
+    password = PasswordField('Password', validators=[DataRequired(message='please input your password'),
+                                               Length(6, 24, message='password length: 6-24 characters')])
+                                               #Regexp(r'^[a-zA-Z]+\w+', message='仅限使用英文、数字、下划线，并以英文开头')])
+    repeat_password = PasswordField('Repeat password', validators=[DataRequired(message='repeat passwords'),
+                                                        EqualTo('password', message='passwords are not matching')])
+    name = StringField('User Name', validators=[DataRequired(message='please input your user name'),
+                                         Length(2, 8, message='user name length: 2-8 characters')])
+    submit = SubmitField('submit')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() or \
                 Company.query.filter_by(email=field.data).first():
-            raise ValidationError('邮箱已被其他账号使用')
+            raise ValidationError('this email has been used by other users')
 
     def create_user(self):
         user = User()
@@ -40,16 +40,16 @@ class RegisterUserForm(FlaskForm):
         db.session.commit()
         return user
 
-
+'''
 class RegisterCompanyForm(FlaskForm):
 
-    email = StringField('邮箱', validators=[DataRequired(message='请填写内容'),
+    email = StringField('邮箱', validators=[DataRequired(message='please input your email'),
                                           Email(message='请输入合法的Email地址')])
-    password = PasswordField('密码', validators=[DataRequired(message='请填写密码'),
-                                               Length(6, 24, message='须在6～24个字符之间'),
-                                               Regexp(r'^[a-zA-Z]+\w+', message='仅限使用英文、数字、下划线，并以英文开头')])
-    repeat_password = PasswordField('重复密码', validators=[DataRequired(message='请填写密码'),
-                                                        EqualTo('password', message='两次密码不一致')])
+    password = PasswordField('密码', validators=[DataRequired(message='please input your password'),
+                                               Length(6, 24, message='password length: 6-24 character'),
+                                               #Regexp(r'^[a-zA-Z]+\w+', message='仅限使用英文、数字、下划线，并以英文开头')])
+    repeat_password = PasswordField('重复密码', validators=[DataRequired(message='please input your password'),
+                                                        EqualTo('password', message='passwords are not matching')])
     name = StringField('企业名称', validators=[DataRequired(message='请填写内容'),
                                            Length(2, 32, message='须在2～32个字符之间')])
     finance_stage = SelectField('融资阶段', choices=[(i, i) for i in FINANCE_STAGE])
@@ -70,16 +70,40 @@ class RegisterCompanyForm(FlaskForm):
         db.session.add(company)
         db.session.commit()
         return company
+'''
+
+class ArticleForm(FlaskForm):
+    title = StringField('title')
+    details = StringField('content', validators=[DataRequired(message='please input your content')])
+    submit = SubmitField('submit')
+    def publish_article(self):
+        article = Article()
+        article.title = self.title.data
+        article.details = self.details.data
+        article.author = current_user.id
+        db.session.add(article)
+        db.session.commit()
+        return article
+
+class AddTagForm(FlaskForm):
+    tag = StringField('tag')
+    submit = SubmitField('submit')
+    def update_tag(self,article_id):
+        article_cur = Article.query.get(article_id)
+        article_cur.tags += ',' + self.tag.data
+        print(article_cur.tags)
+        db.session.commit()
+        return article_cur
 
 
 class LoginForm(FlaskForm):
 
-    email = StringField('邮箱', validators=[DataRequired(message='请填写内容'),
-                                          Email(message='请输入合法的email地址')])
-    password = PasswordField('密码', validators=[DataRequired(message='请填写密码'),
-                                               Length(6, 24, message='须在6～24个字符之间')])
-    remember_me = BooleanField('记住登录状态')
-    submit = SubmitField('登录')
+    email = StringField('Email', validators=[DataRequired(message='please input your email'),
+                                          Email(message='please input valid email')])
+    password = PasswordField('Password', validators=[DataRequired(message='please input your password'),
+                                               Length(6, 24, message='password length: 6-24 character')])
+    remember_me = BooleanField('remember login')
+    submit = SubmitField('Login')
 
 
 class UserDetailForm(RegisterUserForm):
@@ -87,7 +111,7 @@ class UserDetailForm(RegisterUserForm):
     def validate_email(self, field):
         if current_user.email != self.email.data and \
                 User.query.filter_by(email=field.data).first():
-            raise ValidationError('邮箱已被其他账号使用')
+            raise ValidationError('this email has been used by other user')
 
     def update_detail(self, user):
         user.name = self.name.data
@@ -97,13 +121,14 @@ class UserDetailForm(RegisterUserForm):
         db.session.commit()
         return user
 
+'''
+class UserProfileForm(FlaskForm):
 
-class UserResumeForm(FlaskForm):
+    photo = FileField('an image that is less than 300kb', validators=[
+                FileAllowed(uploaded_photo, 'format not matched'),
+                FileRequired('no file chosen')])
+    submit = SubmitField('upload')
 
-    resume = FileField('简历上传（暂仅支持图片，300KB以内）', validators=[
-                FileAllowed(uploaded_resume, '不符合文件格式'),
-                FileRequired('文件未选择')])
-    submit = SubmitField('上传')
 
     def upload_resume(self, user):
         filename = uploaded_resume.save(self.resume.data, name=random_name())
@@ -112,8 +137,16 @@ class UserResumeForm(FlaskForm):
         db.session.add(user)
         db.session.commit()
         return resume_url
-
-
+    
+    def upload_photo(self,user):
+        photoname = uploaded_photo.save(self.photo.data, name=random_name())
+        photo_url = uploaded_photo.url(photoname)
+        user.photo = photo_url
+        db.session.add(user)
+        db.session.commit()
+        return photo_url
+'''
+'''
 class CompanyDetailForm(FlaskForm):
 
     address = StringField('办公地址', validators=[Length(0, 128, message='最多128个字符')])
@@ -177,7 +210,7 @@ class JobForm(FlaskForm):
         db.session.commit()
         return job
 
-
+'''
 def random_name():
     key = ''.join([chr(random.randint(48, 122)) for _ in range(20)])
     h = hmac.new(key.encode('utf-8'), digestmod='MD5')

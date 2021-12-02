@@ -69,6 +69,10 @@
 {% endif %}
 {% endmacro %}
 
+{% macro render_content(content) %}
+<li class="active"><a class="disabled"> <span class="sr-only">(current)</span></a></li>
+{% endmacro %}
+
 
 {% macro render_company(company) %}
 <div class="col-sm-6 col-md-3 company-item">
@@ -83,6 +87,28 @@
       <p style="padding-bottom: 10px">
          {{ company.enabled_jobs().count() }}<br/>在招职位
       </p>
+  </a>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro render_user(user) %}
+<div class="col-sm-6 col-md-3 user-item">
+  <div class="thumbnail">
+      <h4><a href="{{ url_for('company.detail', company_id=company.id) }}">{{ company.name  | truncate(6, True)}}</a></h4>
+      <p>{{ user.name }} / {{ user.role }}</p>
+  <hr>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro render_article(article) %}
+<div class="col-sm-6 col-md-3 company-item"></div>
+  <div class="thumbnail">
+      <p>title: {{ article.title }}</p> 
+      <p>content:</p>
+      <p>{{ article.details }}</p>   
+  <hr>
   </a>
   </div>
 </div>
