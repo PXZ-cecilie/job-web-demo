@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_form %}
+
+{% block body %}
+<div class="jumbotron">
+  <h4>submit contents</h4>
+</div>
+
+    {{ render_form("submit content", form, url_for("user.publish", next=request.args.get('next')), col_md=False) }}
+{% endblock %}  

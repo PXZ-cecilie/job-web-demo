@@ -1,0 +1,135 @@
+<!--reference: https://github.com/zkqiang/job-web-demo-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}{% endblock %}</title>
+        {% block head_css %}
+        {{ ckeditor.load() }}
+        {{ ckeditor.load_code_theme() }}
+        {{ moment.include_jquery }}
+        {{ moment.include_moment() }}
+        {{ moment.lang('zh-CN')}}
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://www.lgstatic.com/www/static/pkg/search-result/page/index/main.html_aio_2_3c98000.css">
+        <link rel="stylesheet" href="https://www.lgstatic.com/www/static/pkg/widgets_4e04063.css">
+        <link rel="stylesheet" href="https://www.lgstatic.com/www/static/pkg/job-detail/page/index/main.html_aio_2_1410e60.css">
+        <link rel="stylesheet" href="/static/main.css">
+        {% endblock %}
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Web Forum</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="{% if active == 'index' %}active{% endif %}">
+                            <a href="/">home<span class="sr-only">(current)</span></a>
+                        <li class="{% if active == 'submit_content' %}active{% endif %}">
+                            <a href="{{ url_for('user.publish') }}">submit content</a>
+                        </li>
+                        <li class="{% if active == 'read_content' %}active{% endif %}">
+                            <a href="{{ url_for('user.browse') }}">read content</a>
+                        </li>
+
+                    </ul>
+                    <form class="navbar-form navbar-left" action="{{ url_for('user.search') }}">
+                        <div class="input-group">
+                            <div class="input-group-btn">
+                            </div>
+                            <input type="text" class="form-control" name="kw" id="kw"
+                                   value="{{ request.args.get('kw', '') }}" placeholder="search">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit" id="search-click" onclick = "remove_stopwords();">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                </button>
+                                <span>nlp processed key word is: <span id="new_kw"> {{res}} </span></span>
+                                <script>
+                                    //kw = kw.split(' ')
+                                    document.getElementById('search-click').addEventListener('click', remove_stopwords);
+                                    stopwords = ['i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','any','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don','should','now']
+                                    punc = [',','.','?','*','(',')','!','@','=','-','~']
+                                    //kw = kw.replace(stopword, "")
+                                    function remove_stopwords() {
+                                        var str = document.getElementById('kw').value;
+                                        //var str = str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                                        res = []
+                                        words = str.split(' ')
+                                        for(i=0;i<words.length;i++) {
+                                        word_clean = words[i].split(".").join("")
+                                        if(!stopwords.includes(word_clean)) {
+
+                                                res.push(word_clean)
+                                            }
+                                        }
+                                        document.getElementById('new_kw').innerText = yourInput;
+                                        return(res.join(' '))
+                                    }  
+                                </script>
+                            </span>
+                          </div>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if not current_user.is_authenticated %}
+                            <li class="{% if active == 'user_register' %}active{% endif %}">
+                            	<a href="{{ url_for('user.register') }}">User Register</a>
+                            </li>
+                            <li class="{% if active == 'login' %}active{% endif %}">
+                                <a href="{{ url_for('front.login', next=request.path) }}">Log in</a>
+                            </li>
+                        {% else %}
+                            {% if current_user.is_user() %}
+                                <li class="{% if active == 'manage' %}active{% endif %}">
+                                    <a href="{{ url_for('user.register') }}">Information Management</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <span id="username">{{ current_user.name }}</span>
+                                    <span class="caret navbar-btn"></span>
+                                </a>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{ url_for('front.logout') }}">Log Out</a></li>
+                                    </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid header">
+            {% block head %}{% endblock %}
+        </div>
+
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block body %}{% endblock %}
+        </div>
+        {% block tail_js %}
+        <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        {% endblock %}
+    </body>
+</html>

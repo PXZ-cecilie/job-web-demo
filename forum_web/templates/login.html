@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_form %}
+
+{% block title %}login{% endblock %}
+
+{% block body %}
+<div class="jumbotron">
+    <h4>login</h4>
+  </div>
+    {{ render_form("login", form, url_for("front.login", next=request.args.get('next')), col_md=False) }}
+{% endblock %}

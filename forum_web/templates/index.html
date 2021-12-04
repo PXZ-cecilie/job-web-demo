@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_article %}
+
+{% block title %}home{% endblock %}
+
+{% block head %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>Web Demo For A Mini Forum</h1>
+    <p></p>
+    <p><a class="btn btn-primary btn-lg" href="https://github.com/PXZ-cecilie" role="button">peixin zhao</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="job-list">
+  <div class="col-sm-6 col-md-3 company-item"></div>
+    <div class="thumbnail">
+        <p>simple dashborad for the website</p> 
+        <p>total users of the website</p> 
+        <p>{{ total_user }}</p>
+        <p>total articles of the website</p> 
+        <p>{{ total_article }}</p>
+    <hr>
+    </a>
+    </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs list-title">
+  <li role="presentation" class="active">
+    <a href="#">lastest post</a>
+    <a href="#">you can see articles without login :)</a>
+  </li>
+</ul>
+
+<div class="company-list">
+  {% for article in articles %}
+    {{ render_article(article) }}
+  {% endfor %}
+</div>
+
+<p class="list-more">
+  <a href="{{ url_for('front.login') }}" class="btn btn-success btn-lg list-more-btn">
+    login to see more
+  </a>
+</p>
+
+{% endblock %}

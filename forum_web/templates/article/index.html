@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination, render_article, render_content %}
+
+{% block title %}search results{% endblock %}
+
+{% block body %}
+<div class="jumbotron">
+  <h4>search result for processed keywords:</h4>
+  <p>{{ res }}</p> 
+</div>
+
+{% if pagination.total == 0 %}
+    <div align="center" >
+      <img src="{{ url_for('static', filename='images/no_company.png') }}" width="200">
+      <h3>no content</h3>
+    </div>
+{% endif %}
+
+<div class="company-list">
+{% for article in pagination %}
+    <div class="col-sm-6 col-md-3 company-item"></div>
+    <div class="thumbnail">
+        <p>title: {{ article[0].title }}</p> 
+        <p>content:</p>
+        <p>{{ article[0].details }}</p>
+        <p>tags: {{ article[0].tags }}</p>
+        <p>related count of this user based on favourite and promote: {{ article[1] }}</p>   
+    <hr>
+    </a>
+    </div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock %}

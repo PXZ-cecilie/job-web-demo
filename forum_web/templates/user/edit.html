@@ -1,0 +1,10 @@
+{% extends "user/base.html" %}
+{% from "macros.html" import render_form %}
+
+{% block title %}
+user edit
+{% endblock %}
+
+{% block right %}
+{{ render_form('information management', form, url_for('user.edit')) }}
+{% endblock %}
